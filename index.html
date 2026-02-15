@@ -2,14 +2,11 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
 
 <style>
 html, body {
   margin: 0;
-  padding: 0;
   height: 100%;
   font-family: Arial;
   background: black;
@@ -23,19 +20,25 @@ html, body {
 }
 
 .player {
-  width: 50%;
-  height: 50%;
   position: relative;
-  border: 2px solid #222;
+  border: 2px solid #111;
   box-sizing: border-box;
 }
 
 .life {
   position: absolute;
-  top: 50%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 64px;
+  font-size: 56px;
+}
+
+.cmd {
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 18px;
 }
 
 .zone {
@@ -47,7 +50,6 @@ html, body {
 .top { top: 0; }
 .bottom { bottom: 0; }
 
-/* Center reset button */
 .reset {
   position: fixed;
   top: 50%;
@@ -56,13 +58,16 @@ html, body {
   z-index: 10;
 }
 
-.reset button {
-  font-size: 18px;
-  padding: 12px 20px;
-  border-radius: 8px;
-  border: none;
-  background: #444;
-  color: white;
+.menu {
+  position: fixed;
+  bottom: 5px;
+  left: 5px;
+  z-index: 10;
+}
+
+button {
+  padding: 8px 12px;
+  font-size: 14px;
 }
 </style>
 </head>
@@ -75,32 +80,99 @@ html, body {
   <button onclick="resetGame()">Reset</button>
 </div>
 
+<div class="menu">
+  Players:
+  <select onchange="setPlayers(this.value)">
+    <option>2</option>
+    <option>3</option>
+    <option selected>4</option>
+    <option>5</option>
+    <option>6</option>
+  </select>
+</div>
+
 <script>
 var startingLife = 40;
-var players = [startingLife, startingLife, startingLife, startingLife];
+var players = 4;
 
-function createBoard() {
+var colors = [
+  "#a33", "#3a3", "#33a",
+  "#aa3", "#a3a", "#3aa"
+];
+
+var life = [];
+var commander = [];
+
+function init() {
+  life = [];
+  commander = [];
+
+  for (var i = 0; i < players; i++) {
+    life.push(startingLife);
+
+    var row = [];
+    for (var j = 0; j < players; j++) {
+      row.push(0);
+    }
+    commander.push(row);
+  }
+
+  draw();
+}
+
+function setPlayers(n) {
+  players = parseInt(n);
+  init();
+}
+
+function layoutSize() {
+  if (players == 2) return [50, 100];
+  if (players <= 4) return [50, 50];
+  return [33.3, 50];
+}
+
+function draw() {
   var container = document.getElementById("container");
   container.innerHTML = "";
 
-  for (var i = 0; i < players.length; i++) {
+  var size = layoutSize();
+
+  for (var i = 0; i < players; i++) {
     var div = document.createElement("div");
     div.className = "player";
+    div.style.width = size[0] + "%";
+    div.style.height = size[1] + "%";
+    div.style.background = colors[i];
 
-    var life = document.createElement("div");
-    life.className = "life";
-    life.innerHTML = players[i];
-    div.appendChild(life);
+    // LIFE
+    var l = document.createElement("div");
+    l.className = "life";
+    l.innerHTML = life[i];
+    div.appendChild(l);
 
+    // COMMANDER TOTAL
+    var total = 0;
+    for (var j = 0; j < players; j++) {
+      if (i != j) total += commander[i][j];
+    }
+
+    var c = document.createElement("div");
+    c.className = "cmd";
+    c.innerHTML = "Cmd: " + total;
+    c.onclick = openCommander;
+    c.setAttribute("data-player", i);
+    div.appendChild(c);
+
+    // TOUCH ZONES
     var top = document.createElement("div");
     top.className = "zone top";
     top.setAttribute("data-player", i);
-    top.onclick = increment;
+    addPress(top, 1, 10);
 
     var bottom = document.createElement("div");
     bottom.className = "zone bottom";
     bottom.setAttribute("data-player", i);
-    bottom.onclick = decrement;
+    addPress(bottom, -1, -10);
 
     div.appendChild(top);
     div.appendChild(bottom);
@@ -109,26 +181,56 @@ function createBoard() {
   }
 }
 
-function increment() {
-  var i = this.getAttribute("data-player");
-  players[i]++;
-  createBoard();
+function addPress(el, tap, hold) {
+  var timer;
+
+  el.ontouchstart = function () {
+    var i = this.getAttribute("data-player");
+
+    timer = setTimeout(function () {
+      changeLife(i, hold);
+      timer = null;
+    }, 400);
+  };
+
+  el.ontouchend = function () {
+    var i = this.getAttribute("data-player");
+
+    if (timer) {
+      clearTimeout(timer);
+      changeLife(i, tap);
+    }
+  };
 }
 
-function decrement() {
+function changeLife(i, amt) {
+  life[i] += amt;
+  draw();
+}
+
+function openCommander() {
   var i = this.getAttribute("data-player");
-  players[i]--;
-  createBoard();
+
+  var from = prompt("Commander damage FROM which player?");
+  if (from === null) return;
+
+  from = parseInt(from) - 1;
+
+  if (from >= 0 && from < players && from != i) {
+    var val = prompt("Add damage:");
+    if (val !== null) {
+      commander[i][from] += parseInt(val);
+    }
+  }
+
+  draw();
 }
 
 function resetGame() {
-  for (var i = 0; i < players.length; i++) {
-    players[i] = startingLife;
-  }
-  createBoard();
+  init();
 }
 
-createBoard();
+init();
 </script>
 
 </body>
