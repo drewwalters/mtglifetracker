@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  font-family: Arial;
+  text-align: center;
+}
+
+.player {
+  margin: 10px;
+}
+
+button {
+  font-size: 24px;
+  padding: 10px 20px;
+}
+</style>
+</head>
+<body>
+
+<h2>Life Tracker</h2>
+
+<div id="players"></div>
+
+<script>
+var players = [40, 40];
+
+function render() {
+  var container = document.getElementById("players");
+  container.innerHTML = "";
+
+  for (var i = 0; i < players.length; i++) {
+    var div = document.createElement("div");
+    div.className = "player";
+
+    div.innerHTML =
+      "<h3>Player " + (i+1) + "</h3>" +
+      "<button onclick='change(" + i + ", -1)'>-</button>" +
+      " " + players[i] + " " +
+      "<button onclick='change(" + i + ", 1)'>+</button>";
+
+    container.appendChild(div);
+  }
+}
+
+function change(index, amount) {
+  players[index] += amount;
+  render();
+}
+
+render();
+</script>
+
+</body>
+</html>
