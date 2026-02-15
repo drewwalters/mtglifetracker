@@ -3,7 +3,6 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-<!-- iOS fullscreen mode -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
@@ -45,12 +44,25 @@ html, body {
   height: 50%;
 }
 
-.top {
-  top: 0;
+.top { top: 0; }
+.bottom { bottom: 0; }
+
+/* Center reset button */
+.reset {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
 }
 
-.bottom {
-  bottom: 0;
+.reset button {
+  font-size: 18px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: none;
+  background: #444;
+  color: white;
 }
 </style>
 </head>
@@ -58,6 +70,10 @@ html, body {
 <body>
 
 <div class="container" id="container"></div>
+
+<div class="reset">
+  <button onclick="resetGame()">Reset</button>
+</div>
 
 <script>
 var startingLife = 40;
@@ -102,6 +118,13 @@ function increment() {
 function decrement() {
   var i = this.getAttribute("data-player");
   players[i]--;
+  createBoard();
+}
+
+function resetGame() {
+  for (var i = 0; i < players.length; i++) {
+    players[i] = startingLife;
+  }
   createBoard();
 }
 
