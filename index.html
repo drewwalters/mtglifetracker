@@ -148,9 +148,8 @@ button {
 <div id="modal" class="modal">
   <div class="modalContent">
     <div>Damage FROM Player:</div>
-    <input id="fromPlayer" type="number" min="1">
-    <div>Add Damage:</div>
-    <input id="damageAmount" type="number">
+    <input id="fromPlayer" type="text" inputmode="numeric" pattern="[0-9]*">    <div>Add Damage:</div>
+    <input id="damageAmount" type="text" inputmode="numeric" pattern="[0-9]*">
     <br>
     <button onclick="submitCommander()">OK</button>
     <button onclick="closeModal()">Cancel</button>
