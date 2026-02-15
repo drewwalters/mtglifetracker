@@ -25,11 +25,12 @@ html, body {
   box-sizing: border-box;
 }
 
-/* PLAYER NUMBER */
+/* PLAYER NUMBER - top-right */
 .playerNumber {
   position: absolute;
   top: 5px;
-  left: 5px;
+  right: 5px;
+  left: auto;
   font-size: 18px;
   font-weight: bold;
 }
@@ -259,6 +260,7 @@ function openCommander() {
   document.getElementById("fromPlayer").value = "";
   document.getElementById("damageAmount").value = "";
   document.getElementById("modal").style.display = "block";
+  document.getElementById("fromPlayer").focus(); // iOS 9 numeric keyboard
 }
 
 function submitCommander() {
