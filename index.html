@@ -27,18 +27,24 @@ html, body {
 
 .life {
   position: absolute;
-  top: 40%;
+  top: 38%;
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 56px;
 }
 
-.cmd {
+/* Commander button */
+.cmdBtn {
   position: absolute;
   top: 60%;
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 18px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(0,0,0,0.4);
+  color: white;
 }
 
 .zone {
@@ -63,11 +69,6 @@ html, body {
   bottom: 5px;
   left: 5px;
   z-index: 10;
-}
-
-button {
-  padding: 8px 12px;
-  font-size: 14px;
 }
 </style>
 </head>
@@ -95,10 +96,7 @@ button {
 var startingLife = 40;
 var players = 4;
 
-var colors = [
-  "#a33", "#3a3", "#33a",
-  "#aa3", "#a3a", "#3aa"
-];
+var colors = ["#a33","#3a3","#33a","#aa3","#a3a","#3aa"];
 
 var life = [];
 var commander = [];
@@ -111,9 +109,7 @@ function init() {
     life.push(startingLife);
 
     var row = [];
-    for (var j = 0; j < players; j++) {
-      row.push(0);
-    }
+    for (var j = 0; j < players; j++) row.push(0);
     commander.push(row);
   }
 
@@ -126,9 +122,9 @@ function setPlayers(n) {
 }
 
 function layoutSize() {
-  if (players == 2) return [50, 100];
-  if (players <= 4) return [50, 50];
-  return [33.3, 50];
+  if (players == 2) return [50,100];
+  if (players <= 4) return [50,50];
+  return [33.3,50];
 }
 
 function draw() {
@@ -156,12 +152,12 @@ function draw() {
       if (i != j) total += commander[i][j];
     }
 
-    var c = document.createElement("div");
-    c.className = "cmd";
-    c.innerHTML = "Cmd: " + total;
-    c.onclick = openCommander;
-    c.setAttribute("data-player", i);
-    div.appendChild(c);
+    var btn = document.createElement("button");
+    btn.className = "cmdBtn";
+    btn.innerHTML = "Cmd: " + total;
+    btn.setAttribute("data-player", i);
+    btn.onclick = openCommander;
+    div.appendChild(btn);
 
     // TOUCH ZONES
     var top = document.createElement("div");
