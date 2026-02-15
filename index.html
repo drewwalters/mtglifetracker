@@ -1,58 +1,111 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+<!-- iOS fullscreen mode -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<link rel="apple-touch-icon" href="icon.png">
+
 <style>
-body {
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
   font-family: Arial;
-  text-align: center;
+  background: black;
+  color: white;
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  height: 100%;
 }
 
 .player {
-  margin: 10px;
+  width: 50%;
+  height: 50%;
+  position: relative;
+  border: 2px solid #222;
+  box-sizing: border-box;
 }
 
-button {
-  font-size: 24px;
-  padding: 10px 20px;
+.life {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 64px;
+}
+
+.zone {
+  position: absolute;
+  width: 100%;
+  height: 50%;
+}
+
+.top {
+  top: 0;
+}
+
+.bottom {
+  bottom: 0;
 }
 </style>
 </head>
+
 <body>
 
-<h2>Life Tracker</h2>
-
-<div id="players"></div>
+<div class="container" id="container"></div>
 
 <script>
-var players = [40, 40];
+var startingLife = 40;
+var players = [startingLife, startingLife, startingLife, startingLife];
 
-function render() {
-  var container = document.getElementById("players");
+function createBoard() {
+  var container = document.getElementById("container");
   container.innerHTML = "";
 
   for (var i = 0; i < players.length; i++) {
     var div = document.createElement("div");
     div.className = "player";
 
-    div.innerHTML =
-      "<h3>Player " + (i+1) + "</h3>" +
-      "<button onclick='change(" + i + ", -1)'>-</button>" +
-      " " + players[i] + " " +
-      "<button onclick='change(" + i + ", 1)'>+</button>";
+    var life = document.createElement("div");
+    life.className = "life";
+    life.innerHTML = players[i];
+    div.appendChild(life);
+
+    var top = document.createElement("div");
+    top.className = "zone top";
+    top.setAttribute("data-player", i);
+    top.onclick = increment;
+
+    var bottom = document.createElement("div");
+    bottom.className = "zone bottom";
+    bottom.setAttribute("data-player", i);
+    bottom.onclick = decrement;
+
+    div.appendChild(top);
+    div.appendChild(bottom);
 
     container.appendChild(div);
   }
 }
 
-function change(index, amount) {
-  players[index] += amount;
-  render();
+function increment() {
+  var i = this.getAttribute("data-player");
+  players[i]++;
+  createBoard();
 }
 
-render();
+function decrement() {
+  var i = this.getAttribute("data-player");
+  players[i]--;
+  createBoard();
+}
+
+createBoard();
 </script>
 
 </body>
